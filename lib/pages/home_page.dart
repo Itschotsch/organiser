@@ -98,9 +98,12 @@ class _HomePageState extends State<HomePage> {
                           // Toast
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text("No entity with QRID $qrid found."),
+                              content: Text("No entity with QRID $qrid found.\nCreating new entity..."),
                             ),
                           );
+                          Navigator.pushNamed(context, '/modify-entity', arguments: null).then((value) {
+                            setState(() {});
+                          });
                         } else {
                           Navigator.pushNamed(context, '/modify-entity', arguments: entity).then((value) {
                             setState(() {});
