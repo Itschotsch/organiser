@@ -1,11 +1,58 @@
 import 'package:flutter/material.dart';
-import 'package:organiser/database.dart';
+import '../database.dart';
+import 'entity_search.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
+
+  static Widget buildEntityListTile(BuildContext context, EntityProperties entity, Function() setState) {
+    return ListTile(
+      key: ValueKey(entity.entityID.toString()),
+      title: Text(
+        entity.name,
+        style: Theme.of(context).textTheme.titleMedium,
+      ),
+      subtitle: Builder(builder: (context) {
+        if (entity.description.isEmpty) {
+          // If the description is empty, display a cursive and transparent "No description" text:
+          return Opacity(
+            opacity: 0.5,
+            child: Text(
+              "No description",
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    fontStyle: FontStyle.italic,
+                  ),
+            ),
+          );
+        } else {
+          return Text(
+            entity.description,
+            style: Theme.of(context).textTheme.bodyMedium,
+          );
+        }
+      }),
+      leading: entity.image == null
+          ? Container(
+              width: 50,
+              height: 50,
+              color: Theme.of(context).colorScheme.primary,
+            )
+          : Image.memory(
+              entity.image!,
+              width: 50,
+              height: 50,
+            ),
+      trailing: entity.bookmarked ? const Icon(Icons.star) : null,
+      onTap: () {
+        Navigator.pushNamed(context, '/entity', arguments: entity).then((value) {
+          setState();
+        });
+      },
+    );
+  }
 }
 
 class _HomePageState extends State<HomePage> {
@@ -14,6 +61,20 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Inventory"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              // Turn app bar into a search bar:
+              showSearch(
+                context: context,
+                delegate: EntitySearchDelegate(),
+              ).then((value) {
+                setState(() {});
+              });
+            },
+          ),
+        ],
       ),
       // Display a list of all the entities in the database:
       // OrganisationDatabase.getNumberOfEntities() and OrganisationDatabase.getEntities()
@@ -30,49 +91,9 @@ class _HomePageState extends State<HomePage> {
               itemCount: numberOfEntities,
               itemBuilder: (BuildContext context, int index) {
                 EntityProperties entity = entities[index];
-                return ListTile(
-                  key: ValueKey(entity.entityID.toString()),
-                  title: Text(
-                    entity.name,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  subtitle: Builder(builder: (context) {
-                    if (entity.description.isEmpty) {
-                      // If the description is empty, display a cursive and transparent "No description" text:
-                      return Opacity(
-                        opacity: 0.5,
-                        child: Text(
-                          "No description",
-                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                fontStyle: FontStyle.italic,
-                              ),
-                        ),
-                      );
-                    } else {
-                      return Text(
-                        entity.description,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      );
-                    }
-                  }),
-                  leading: entity.image == null
-                      ? Container(
-                          width: 50,
-                          height: 50,
-                          color: Theme.of(context).colorScheme.primary,
-                        )
-                      : Image.file(
-                          entity.image!,
-                          width: 50,
-                          height: 50,
-                        ),
-                  trailing: entity.bookmarked ? const Icon(Icons.star) : null,
-                  onTap: () {
-                    Navigator.pushNamed(context, '/modify-entity', arguments: entity).then((value) {
-                      setState(() {});
-                    });
-                  },
-                );
+                return HomePage.buildEntityListTile(context, entity, () {
+                  setState(() {});
+                });
               },
             );
           } else {
@@ -105,7 +126,7 @@ class _HomePageState extends State<HomePage> {
                             setState(() {});
                           });
                         } else {
-                          Navigator.pushNamed(context, '/modify-entity', arguments: entity).then((value) {
+                          Navigator.pushNamed(context, '/entity', arguments: entity).then((value) {
                             setState(() {});
                           });
                         }

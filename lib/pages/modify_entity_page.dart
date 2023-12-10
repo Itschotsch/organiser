@@ -60,6 +60,7 @@ class _ModifyEntityPageState extends State<ModifyEntityPage> {
           // - Parent/Container (reference to another entity) (optional)
           // - Tags (optional: can be empty)
           // - QRID (optional: can be empty, can be scanned by QR code scanner on ScannerPage)
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Name
             TextField(
@@ -160,7 +161,7 @@ class _ModifyEntityPageState extends State<ModifyEntityPage> {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Image.file(
+                      Image.memory(
                         entityProperties.image!,
                         width: 100,
                         height: 100,
@@ -217,13 +218,13 @@ class _ModifyEntityPageState extends State<ModifyEntityPage> {
                       actions: [
                         TextButton(
                           onPressed: () {
-                            Navigator.pop(context);
+                            Navigator.pop(context); // Close the dialog
                           },
                           child: const Text("Cancel"),
                         ),
                         TextButton(
                           onPressed: () async {
-                            Navigator.pop(context);
+                            Navigator.pop(context); // Close the dialog
                             await delete(entityProperties.entityID!);
                           },
                           child: const Text("Delete"),
@@ -265,7 +266,7 @@ class _ModifyEntityPageState extends State<ModifyEntityPage> {
                   leading: const Icon(Icons.photo),
                   title: const Text("Pick Image from Gallery"),
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.pop(context); // Close the dialog
                     pickImageFromGallery();
                   },
                 ),
@@ -273,7 +274,7 @@ class _ModifyEntityPageState extends State<ModifyEntityPage> {
                   leading: const Icon(Icons.camera_alt),
                   title: const Text("Take Photo"),
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.pop(context); // Close the dialog
                     takePhoto();
                   },
                 ),
@@ -284,24 +285,34 @@ class _ModifyEntityPageState extends State<ModifyEntityPage> {
       );
 
   void pickImageFromGallery() async {
-    final XFile? pickedImage = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-    );
-    if (pickedImage != null) {
-      setState(() {
-        entityProperties.image = File(pickedImage.path);
-      });
+    try {
+      final XFile? pickedImage = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+      );
+      if (pickedImage != null) {
+        setState(() {
+          entityProperties.image = File(pickedImage.path).readAsBytesSync();
+        });
+      }
+    } catch (e) {
+      // Do nothing
+      // This is probably because the user denied access to the gallery.
     }
   }
 
   void takePhoto() async {
-    final XFile? takenPhoto = await ImagePicker().pickImage(
-      source: ImageSource.camera,
-    );
-    if (takenPhoto != null) {
-      setState(() {
-        entityProperties.image = File(takenPhoto.path);
-      });
+    try {
+      final XFile? takenPhoto = await ImagePicker().pickImage(
+        source: ImageSource.camera,
+      );
+      if (takenPhoto != null) {
+        setState(() {
+          entityProperties.image = File(takenPhoto.path).readAsBytesSync();
+        });
+      }
+    } catch (e) {
+      // Do nothing
+      // This is probably because the user denied access to the camera.
     }
   }
 
@@ -319,12 +330,17 @@ class _ModifyEntityPageState extends State<ModifyEntityPage> {
   }
 
   Future<void> save() async {
-    Navigator.pop(context);
-    await entityProperties.insertOrUpdate();
+    await entityProperties.insertOrUpdate().then((entityID) {
+      Navigator.pop(context, entityID);
+    });
   }
 
   Future<bool> delete(int entityID) async {
-    Navigator.pop(context);
-    return await entityProperties.delete();
+    return await entityProperties.delete().then((success) {
+      if (success) {
+        Navigator.pop(context, entityID);
+      }
+      return success;
+    });
   }
 }
