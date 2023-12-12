@@ -8,9 +8,10 @@ class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
 
-  static Widget buildEntityListTile(BuildContext context, EntityProperties entity, Function() setState) {
+  static Widget buildEntityListTile(BuildContext context, EntityProperties entity, Function() update) {
+    print("Building entity list tile for ${entity.name} with tags ${entity.tags.join(',')}"); // DEBUG
     return ListTile(
-      key: ValueKey(entity.entityID.toString()),
+      // key: ValueKey(entity.entityID.toString()),
       title: Text(
         entity.name,
         style: Theme.of(context).textTheme.titleMedium,
@@ -31,6 +32,8 @@ class HomePage extends StatefulWidget {
           return Text(
             entity.description,
             style: Theme.of(context).textTheme.bodyMedium,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           );
         }
       }),
@@ -48,7 +51,7 @@ class HomePage extends StatefulWidget {
       trailing: entity.bookmarked ? const Icon(Icons.star) : null,
       onTap: () {
         Navigator.pushNamed(context, '/entity', arguments: entity).then((value) {
-          setState();
+          update();
         });
       },
     );
@@ -56,6 +59,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  GlobalKey<RefreshIndicatorState> refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+  late Future<int> numberOfEntities;
+  late Future<List<EntityProperties>> entities;
+
+  @override
+  void initState() {
+    super.initState();
+    loadEntities();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,21 +93,31 @@ class _HomePageState extends State<HomePage> {
       // OrganisationDatabase.getNumberOfEntities() and OrganisationDatabase.getEntities()
       body: FutureBuilder(
         future: Future.wait([
-          OrganisationDatabase.getNumberOfEntities(),
-          OrganisationDatabase.queryAllEntities(),
+          numberOfEntities,
+          entities,
         ]),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             int numberOfEntities = snapshot.data![0] as int;
             List<EntityProperties> entities = snapshot.data![1] as List<EntityProperties>;
-            return ListView.builder(
-              itemCount: numberOfEntities,
-              itemBuilder: (BuildContext context, int index) {
-                EntityProperties entity = entities[index];
-                return HomePage.buildEntityListTile(context, entity, () {
-                  setState(() {});
+            // Pull down to refresh:
+            return RefreshIndicator(
+              key: refreshIndicatorKey,
+              onRefresh: () async {
+                setState(() {
+                  loadEntities();
                 });
               },
+              child: ListView.builder(
+                itemCount: numberOfEntities,
+                itemBuilder: (BuildContext context, int index) {
+                  return HomePage.buildEntityListTile(context, entities[index], () {
+                    setState(() {
+                      loadEntities();
+                    });
+                  });
+                },
+              ),
             );
           } else {
             return const Center(
@@ -123,11 +146,15 @@ class _HomePageState extends State<HomePage> {
                             ),
                           );
                           Navigator.pushNamed(context, '/modify-entity', arguments: null).then((value) {
-                            setState(() {});
+                            setState(() {
+                              loadEntities();
+                            });
                           });
                         } else {
                           Navigator.pushNamed(context, '/entity', arguments: entity).then((value) {
-                            setState(() {});
+                            setState(() {
+                              loadEntities();
+                            });
                           });
                         }
                       },
@@ -151,5 +178,13 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
+  }
+
+  void loadEntities() {
+    print("Loading entities..."); // DEBUG
+    setState(() {
+      numberOfEntities = OrganisationDatabase.getNumberOfEntities();
+      entities = OrganisationDatabase.queryAllEntities();
+    });
   }
 }

@@ -4,6 +4,7 @@ import 'pages/entity_page.dart';
 import 'pages/home_page.dart';
 import 'pages/modify_entity_page.dart';
 import 'pages/scanner_page.dart';
+import 'pages/tags_page.dart';
 
 void main() {
   runApp(const OrganiserApp());
@@ -25,6 +26,7 @@ class OrganiserApp extends StatelessWidget {
         "/entity": (context) => const EntityPage(),
         "/modify-entity": (context) => const ModifyEntityPage(),
         "/scanner": (context) => const ScannerPage(),
+        "/tags": (context) => const TagsPage(),
       },
     );
   }

@@ -47,7 +47,8 @@ class EntitySearchDelegate extends SearchDelegate<EntityProperties?> {
             itemCount: entities.length,
             itemBuilder: (context, index) {
               return HomePage.buildEntityListTile(context, entities[index], () {
-                // setState(() {});
+                // No need to refresh.
+                // No need to setState(() {});
               });
             },
           );

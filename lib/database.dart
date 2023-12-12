@@ -133,6 +133,17 @@ class OrganisationDatabase {
       return results[0]["bytes"];
     }
   }
+
+  static Future<List<String>> queryAllTags() async {
+    // NOTE: This is a very inefficient way of doing this. It would be better to have a separate table for tags.
+    Database db = await open();
+    List<Map<String, dynamic>> results = await db.rawQuery(
+      "SELECT tags FROM entities",
+    );
+    // db.close();
+    // return results.map((e) => e["tags"].toString().split(",").forEach((tag) => tag.trim())).expand((tag) => tag).where((tag) => tag.isNotEmpty).toSet().toList();
+    return results.map((e) => e["tags"].toString().trim().split(",").where((tag) => tag.isNotEmpty).toList()).expand((tag) => tag).toSet().toList();
+  }
 }
 
 class EntityProperties {
@@ -177,7 +188,7 @@ class EntityProperties {
       description: map["description"],
       image: map["image"] == null ? null : await OrganisationDatabase.queryBytes(map["image"]!),
       parent: map["parent"],
-      tags: map["tags"].split(","),
+      tags: map["tags"].toString().trim().split(",").where((tag) => tag.isNotEmpty).toList(),
       qrid: map["qrid"],
       bookmarked: map["bookmarked"] == 1,
       createdOn: DateTime.parse(map["created_on"]),
@@ -195,7 +206,7 @@ class EntityProperties {
         "description": entityProperties.description.trim(),
         "image": imageHash,
         "parent": entityProperties.parent,
-        "tags": entityProperties.tags.join(","),
+        "tags": entityProperties.tags.map((tag) => tag.trim()).join(",").trim(),
         "qrid": entityProperties.qrid,
         "bookmarked": entityProperties.bookmarked ? 1 : 0,
         "created_on": DateTime.now().toUtc().toIso8601String(),
@@ -241,5 +252,20 @@ class EntityProperties {
     );
     // db.close();
     return rowsAffected > 0;
+  }
+
+  EntityProperties copy() {
+    return EntityProperties(
+      entityID: entityID,
+      name: name,
+      description: description,
+      image: image,
+      parent: parent,
+      tags: tags.map((tag) => tag).toList(),
+      qrid: qrid,
+      bookmarked: bookmarked,
+      createdOn: createdOn,
+      modifiedOn: modifiedOn,
+    );
   }
 }

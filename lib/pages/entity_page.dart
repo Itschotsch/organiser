@@ -51,202 +51,261 @@ class _EntityPageState extends State<EntityPage> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          // Form to fill in the details of the new entity:
-          // - Name
-          // - Description
-          // - Image (optional)
-          // - Parent/Container (reference to another entity) (optional)
-          // - Tags (optional: can be empty)
-          // - QRID (optional: can be empty, can be scanned by QR code scanner on ScannerPage)
-          children: [
-            // Name
-            // TextField(
-            //   decoration: const InputDecoration(
-            //     labelText: "Name",
-            //     hintText: "What's the name of your entity?",
-            //     border: OutlineInputBorder(),
-            //   ),
-            //   onChanged: (value) {
-            //     entityProperties.name = value;
-            //     onUpdateEntity();
-            //   },
-            //   controller: TextEditingController(text: entityProperties.name),
-            //   autofocus: true,
-            // ),
-            Text(
-              entityProperties.name,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 16.0),
-            // Description
-            // TextField(
-            //   decoration: const InputDecoration(
-            //     labelText: "Description",
-            //     hintText: "Describe your entity...",
-            //     border: OutlineInputBorder(),
-            //   ),
-            //   maxLines: null,
-            //   keyboardType: TextInputType.multiline,
-            //   onChanged: (value) {
-            //     entityProperties.description = value;
-            //     onUpdateEntity();
-            //   },
-            //   controller: TextEditingController(text: entityProperties.description),
-            // ),
-            // Text(
-            //   entityProperties.description,
-            //   style: Theme.of(context).textTheme.bodyLarge,
-            // ),
-            Builder(builder: (context) {
-              if (entityProperties.description.isEmpty) {
-                // If the description is empty, display a cursive and transparent "No description" text:
-                return Opacity(
-                  opacity: 0.5,
-                  child: Text(
-                    "No description",
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontStyle: FontStyle.italic,
-                        ),
-                  ),
-                );
-              } else {
-                return Text(
-                  entityProperties.description,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                );
-              }
-            }),
-            const SizedBox(height: 16.0),
-            // QRID
-            // Builder(
-            //   builder: (context) {
-            //     if (entityProperties.qrid == null) {
-            //       return ElevatedButton(
-            //         onPressed: () {
-            //           scanQRCode();
-            //         },
-            //         child: const Text("Scan QR Code"),
-            //       );
-            //     } else {
-            //       return Row(
-            //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //         children: [
-            //           QrImageView(
-            //             data: entityProperties.qrid!,
-            //             size: 100,
-            //             padding: const EdgeInsets.all(0),
-            //           ),
-            //           const SizedBox(width: 16.0),
-            //           Expanded(
-            //             child: Text(
-            //               entityProperties.qrid!,
-            //               style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontStyle: FontStyle.italic),
-            //               textAlign: TextAlign.center,
-            //               overflow: TextOverflow.ellipsis,
-            //               maxLines: 4,
-            //             ),
-            //           ),
-            //           const SizedBox(width: 16.0),
-            //           Column(
-            //             children: [
-            //               ElevatedButton(
-            //                 onPressed: () {
-            //                   scanQRCode();
-            //                 },
-            //                 child: const Text("Scan QR Code"),
-            //               ),
-            //               ElevatedButton(
-            //                 onPressed: () {
-            //                   setState(() {
-            //                     entityProperties.qrid = null;
-            //                   });
-            //                 },
-            //                 child: const Text("Clear QR Code"),
-            //               ),
-            //             ],
-            //           ),
-            //         ],
-            //       );
-            //     }
-            //   },
-            // ),
-            Builder(
-              builder: (context) {
-                List<Widget> row = [];
-                if (entityProperties.qrid != null) {
-                  row += [
-                    QrImageView(
-                      data: entityProperties.qrid!,
-                      size: 100,
-                      padding: const EdgeInsets.all(0),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            // Form to fill in the details of the new entity:
+            // - Name
+            // - Description
+            // - Image (optional)
+            // - Parent/Container (reference to another entity) (optional)
+            // - Tags (optional: can be empty)
+            // - QRID (optional: can be empty, can be scanned by QR code scanner on ScannerPage)
+            children: [
+              // Name
+              // TextField(
+              //   decoration: const InputDecoration(
+              //     labelText: "Name",
+              //     hintText: "What's the name of your entity?",
+              //     border: OutlineInputBorder(),
+              //   ),
+              //   onChanged: (value) {
+              //     entityProperties.name = value;
+              //     onUpdateEntity();
+              //   },
+              //   controller: TextEditingController(text: entityProperties.name),
+              //   autofocus: true,
+              // ),
+              Text(
+                entityProperties.name,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 16.0),
+              // Description
+              // TextField(
+              //   decoration: const InputDecoration(
+              //     labelText: "Description",
+              //     hintText: "Describe your entity...",
+              //     border: OutlineInputBorder(),
+              //   ),
+              //   maxLines: null,
+              //   keyboardType: TextInputType.multiline,
+              //   onChanged: (value) {
+              //     entityProperties.description = value;
+              //     onUpdateEntity();
+              //   },
+              //   controller: TextEditingController(text: entityProperties.description),
+              // ),
+              // Text(
+              //   entityProperties.description,
+              //   style: Theme.of(context).textTheme.bodyLarge,
+              // ),
+              Builder(builder: (context) {
+                if (entityProperties.description.isEmpty) {
+                  // If the description is empty, display a cursive and transparent "No description" text:
+                  return Opacity(
+                    opacity: 0.5,
+                    child: Text(
+                      "No description",
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            fontStyle: FontStyle.italic,
+                          ),
                     ),
-                  ];
+                  );
+                } else {
+                  return Text(
+                    entityProperties.description,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  );
                 }
-                if (entityProperties.image != null) {
-                  row += [
-                    Image.memory(
-                      entityProperties.image!,
-                      width: 100,
-                      height: 100,
-                    ),
-                  ];
-                }
-                // insert spacer between images
-                row.map((e) => [e, const SizedBox(width: 16.0)]).expand((e) => e).toList().removeLast();
-                return Row(
-                  mainAxisAlignment: row.length == 1 ? MainAxisAlignment.center : MainAxisAlignment.spaceAround,
-                  children: row,
-                );
-              },
-            ),
-            // Image
-            // Builder(
-            //   builder: (context) {
-            //     if (entityProperties.image == null) {
-            //       return ElevatedButton(
-            //         onPressed: () {
-            //           pickImageOrTakePhoto("Add Image");
-            //         },
-            //         child: const Text("Add Image"),
-            //       );
-            //     } else {
-            //       return Row(
-            //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //         children: [
-            //           Image.memory(
-            //             entityProperties.image!,
-            //             width: 100,
-            //             height: 100,
-            //           ),
-            //           const SizedBox(width: 16.0),
-            //           Column(
-            //             children: [
-            //               ElevatedButton(
-            //                 onPressed: () {
-            //                   pickImageOrTakePhoto("Change Image");
-            //                 },
-            //                 child: const Text("Change Image"),
-            //               ),
-            //               ElevatedButton(
-            //                 onPressed: () {
-            //                   setState(() {
-            //                     entityProperties.image = null;
-            //                   });
-            //                 },
-            //                 child: const Text("Remove Image"),
-            //               ),
-            //             ],
-            //           ),
-            //         ],
-            //       );
-            //     }
-            //   },
-            // ),
-          ],
+              }),
+              const SizedBox(height: 16.0),
+              // QRID
+              // Builder(
+              //   builder: (context) {
+              //     if (entityProperties.qrid == null) {
+              //       return ElevatedButton(
+              //         onPressed: () {
+              //           scanQRCode();
+              //         },
+              //         child: const Text("Scan QR Code"),
+              //       );
+              //     } else {
+              //       return Row(
+              //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //         children: [
+              //           QrImageView(
+              //             data: entityProperties.qrid!,
+              //             size: 100,
+              //             padding: const EdgeInsets.all(0),
+              //           ),
+              //           const SizedBox(width: 16.0),
+              //           Expanded(
+              //             child: Text(
+              //               entityProperties.qrid!,
+              //               style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontStyle: FontStyle.italic),
+              //               textAlign: TextAlign.center,
+              //               overflow: TextOverflow.ellipsis,
+              //               maxLines: 4,
+              //             ),
+              //           ),
+              //           const SizedBox(width: 16.0),
+              //           Column(
+              //             children: [
+              //               ElevatedButton(
+              //                 onPressed: () {
+              //                   scanQRCode();
+              //                 },
+              //                 child: const Text("Scan QR Code"),
+              //               ),
+              //               ElevatedButton(
+              //                 onPressed: () {
+              //                   setState(() {
+              //                     entityProperties.qrid = null;
+              //                   });
+              //                 },
+              //                 child: const Text("Clear QR Code"),
+              //               ),
+              //             ],
+              //           ),
+              //         ],
+              //       );
+              //     }
+              //   },
+              // ),
+              Builder(
+                builder: (context) {
+                  List<Widget> row = [];
+                  if (entityProperties.qrid != null) {
+                    row += [
+                      QrImageView(
+                        data: entityProperties.qrid!,
+                        size: 100,
+                        padding: const EdgeInsets.all(0),
+                      ),
+                    ];
+                  }
+                  if (entityProperties.image != null) {
+                    row += [
+                      Image.memory(
+                        entityProperties.image!,
+                        width: 100,
+                        height: 100,
+                      ),
+                    ];
+                  }
+                  if (row.isEmpty) {
+                    return const SizedBox();
+                  }
+                  // insert spacer between images
+                  row.map((e) => [e, const SizedBox(width: 16.0)]).expand((e) => e).toList().removeLast();
+                  return Row(
+                    mainAxisAlignment: row.length == 1 ? MainAxisAlignment.center : MainAxisAlignment.spaceAround,
+                    children: row,
+                  );
+                },
+              ),
+              // Image
+              // Builder(
+              //   builder: (context) {
+              //     if (entityProperties.image == null) {
+              //       return ElevatedButton(
+              //         onPressed: () {
+              //           pickImageOrTakePhoto("Add Image");
+              //         },
+              //         child: const Text("Add Image"),
+              //       );
+              //     } else {
+              //       return Row(
+              //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //         children: [
+              //           Image.memory(
+              //             entityProperties.image!,
+              //             width: 100,
+              //             height: 100,
+              //           ),
+              //           const SizedBox(width: 16.0),
+              //           Column(
+              //             children: [
+              //               ElevatedButton(
+              //                 onPressed: () {
+              //                   pickImageOrTakePhoto("Change Image");
+              //                 },
+              //                 child: const Text("Change Image"),
+              //               ),
+              //               ElevatedButton(
+              //                 onPressed: () {
+              //                   setState(() {
+              //                     entityProperties.image = null;
+              //                   });
+              //                 },
+              //                 child: const Text("Remove Image"),
+              //               ),
+              //             ],
+              //           ),
+              //         ],
+              //       );
+              //     }
+              //   },
+              // ),
+
+              // const SizedBox(height: 16.0),
+              // // Tags
+              // Builder(
+              //   builder: (context) {
+              //     List<Widget> widgets = [];
+
+              //     for (var tag in entityProperties.tags) {
+              //       widgets.add(
+              //         Chip(
+              //           label: Text(tag),
+              //           onDeleted: () {
+              //             setState(() {
+              //               entityProperties.tags.remove(tag);
+              //             });
+              //           },
+              //         ),
+              //       );
+              //     }
+
+              //     widgets.add(
+              //       ElevatedButton(
+              //         onPressed: () async {
+              //           // Push '/tags' and use the tags returned from it:
+              //           Navigator.pushNamed(context, "/tags", arguments: entityProperties.tags).then((tags) {
+              //             if (tags != null) {
+              //               setState(() {
+              //                 entityProperties.tags = tags as List<String>;
+              //               });
+              //             }
+              //           });
+              //         },
+              //         child: const Text("Add Tags"),
+              //       ),
+              //     );
+
+              //     return Wrap(
+              //       spacing: 8.0,
+              //       runSpacing: 8.0,
+              //       children: widgets,
+              //     );
+              //   },
+              // ),
+              const SizedBox(height: 16.0),
+              // Tags:
+              Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                children: entityProperties.tags.map((tag) {
+                  return Chip(
+                    label: Text(tag),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
         ),
       ),
       // floatingActionButton: FloatingActionButton(
@@ -306,14 +365,14 @@ class _EntityPageState extends State<EntityPage> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.edit),
         onPressed: () {
-          Navigator.pushNamed(context, '/modify-entity', arguments: entityProperties).then((entityID) {
-            if (entityID != null) {
+          Navigator.pushNamed(context, '/modify-entity', arguments: entityProperties).then((entityPropertiesOrEntityID) {
+            // If entityPropertiesOrEntityID is an EntityProperties, then it was updated. If it is an int, then it was deleted.
+            if (entityPropertiesOrEntityID is EntityProperties) {
               setState(() {
-                entityProperties.entityID = entityID as int;
+                entityProperties = entityPropertiesOrEntityID;
               });
-            } else {
-              // Entity was deleted
-              Navigator.pop(context, entityProperties.entityID);
+            } else if (entityPropertiesOrEntityID is int) {
+              Navigator.pop(context, entityPropertiesOrEntityID);
             }
           });
         },
